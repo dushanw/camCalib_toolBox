@@ -1,2 +1,2 @@
 # camCalib_toolBox
-Matlab toolbox to calibrate camera parameters from Image data.
+Matlab toolbox to calibrate an EMCCD camera parameters from Image data.
