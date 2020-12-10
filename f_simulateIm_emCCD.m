@@ -1,13 +1,13 @@
 
 function [Xhat XhatADU] = f_simulateIm_emCCD(X0,pram)
-
-  if pram.useGPU ==1
-    X0  = gpuArray(X0);
-  end
   
   Xdark   = pram.dXdt_dark * pram.t_exp;             % [e-]    Dark noise
   Xhat    = poissrnd(X0 + Xdark);                    % [e-]    Poisson shot noise  
-      
+
+  if pram.useGPU ==1
+    Xhat  = gpuArray(Xhat);
+  end
+  
   fprintf('%0.4d/%0.4d',0,pram.N_gainStages)
   for i=1:pram.N_gainStages 
     fprintf('\b\b\b\b\b\b\b\b\b%0.4d/%0.4d',i,pram.N_gainStages)
