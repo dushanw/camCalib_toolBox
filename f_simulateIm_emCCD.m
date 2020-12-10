@@ -2,7 +2,7 @@
 function [Xhat XhatADU] = f_simulateIm_emCCD(X0,pram)
 
   if pram.useGPU ==1
-    Xhat  = gpuArray(Xhat);
+    X0  = gpuArray(X0);
   end
   
   Xdark   = pram.dXdt_dark * pram.t_exp;             % [e-]    Dark noise
