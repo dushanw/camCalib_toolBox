@@ -13,8 +13,6 @@ function [Xhat XhatADU] = f_simulateIm_emCCD(X0,pram)
     fprintf('\b\b\b\b\b\b\b\b\b%0.4d/%0.4d',i,pram.N_gainStages)
     Xhat  = Xhat + binornd(Xhat,pram.Brnuli_alpha);               % [e-]    Add binomial noise due to each step in the Em process
   end
-  Xhat    = Xhat + normrnd(0,pram.sigma_rd); 
-
-  XhatADU = Xhat * pram.ADCfactor + pram.bias;        % [ADU]   simulated image in ADU
-  
+  Xhat    = (Xhat + normrnd(0,pram.sigma_rd))/pram.EMgain;        % [e-]    Input (to EM register) image with noise
+  XhatADU = Xhat * pram.EMgain * pram.ADCfactor + pram.bias;      % [ADU]   simulated image in ADU
 end

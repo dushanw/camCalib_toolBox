@@ -121,27 +121,88 @@ plot(inds,h)
 xlim([0 2000])
 legend('1','2','3','4','5');
 
-%% 2020-12-10 Try for Nuvu EMCCD
+%% 2020-12-10 Try a forward simulation for Nuvu EMCCD
 clc; clear all
 pram              = f_praminit_nuvu();
 
 pram.dataPath   = '/Volumes/GoogleDrive/My Drive/_Data/DEEP-TFM/2020-11-19/';
 pram.datafName  = 'dmd_exp_tfm_mouseBrain_20201119_noCrop.mat';
 load([pram.dataPath pram.datafName]);
-
-Yhat  = Data.reg1_sf;
-clear Data
+% Yhat  = Data.reg1_sf;
+% clear Data
+load('./_Datasets/tfm_mouseBrain_20201119/mouseBrain_20201119_reg1_sf.mat')
 
 %Y0   = Yhat(360:420 ,160:210, :);
-Y0    = Yhat(134:427 ,107:415, :);
-X0    = (mean(Y0,3)-pram.bias)/(pram.ADCfactor*pram.EMgain);
-
+Ymean    = Yhat(134:427 ,107:415, :);
+X0    = (mean(Ymean,3)-pram.bias)/(pram.ADCfactor*pram.EMgain);
 X0    = X0 - 10;
+
+%X0   = double(imread('cameraman.tif'));
+
 X0(X0(:)<0) = 0;
 tic
 [Xhat XhatADU]  = f_simulateIm_emCCD(X0,pram);
 toc
 imagesc([X0 Xhat/pram.EMgain]);axis image;colorbar
+
+%% 2020-12-11 Try calibrate for ADCfactor and Bias to pre-process data
+clc; clear all
+
+% mouse brain
+pram.dataPath     = '/Volumes/GoogleDrive/My Drive/_Data/DEEP-TFM/2020-11-19/';
+pram.datafName    = 'dmd_exp_tfm_mouseBrain_20201119_noCrop.mat';
+load([pram.dataPath pram.datafName]);
+Yhat  = double(Data.reg3_100um_wf);
+clear Data
+
+% beads 2020-09-25
+pram.dataPath     = '/Volumes/GoogleDrive/My Drive/_Data/DEEP-TFM/2020-09-25_Cheng_8-4-3patternedBeads/';
+pram.datafName    = 'dmd_exp_tfm_beads_20200925_noCrop.mat';
+load([pram.dataPath pram.datafName]);
+Yhat1 = double(Data.beads2_wf);
+Yhat2 = double(Data.beads1_wf);
+clear Data
+
+
+%
+Yhat              = Yhat1;
+pram              = f_praminit_nuvu();
+%[pram Y_preProc]  = f_calibCamPram_emCCD(Yhat,pram,'beads1');
+
+Y                 = Yhat(360:420 ,160:210, :);
+%Y                 = Yhat(313:373 ,225:286, :);
+%Y                 = Yhat(340:370 ,225:255, :);
+
+
+%pram.bias        = 300;
+%pram.ADCfactor   = .25;
+Y                 = Yhat(110:195 ,275:379, :);% beads 2
+
+% Ymean             = mean(Y,3);
+% Ymean             = Ymean - min(Ymean(:)) + pram.bias;
+% Ymean             = (Ymean - pram.bias)/(pram.EMgain*pram.ADCfactor);
+
+pram              = f_praminit_nuvu();
+Y_preProc         = (Y - pram.bias)/(pram.EMgain*pram.ADCfactor);
+Ymean             = mean(Y_preProc,3);
+%Ymean             = mean(Ymean,3);
+%Ymean(Ymean(:)==0)= 0;
+tic
+[Xhat XhatADU]   = f_simulateIm_emCCD(Ymean,pram);
+toc
+figure;imagesc([Xhat Y_preProc(:,:,randi(size(Yhat,3))) mean(Y_preProc,3)]);axis image;colorbar; 
+title(sprintf('Bias ~ %d | k-gain ~ %d | Em-gain ~ %d\n Simulated(Left), Experimental(Middle), GT(Right)',...
+               round(pram.bias),round(1/pram.ADCfactor),round(pram.EMgain)));
+saveas(gcf,sprintf('beads-20200925_Bias_%d_k-gain_%d_Em-gain_%d.png',round(pram.bias),round(1/pram.ADCfactor),round(pram.EMgain)));
+
+
+
+
+
+
+
+
+
 
 
 
