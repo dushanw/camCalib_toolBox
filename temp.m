@@ -163,7 +163,6 @@ Yhat1 = double(Data.beads2_wf);
 Yhat2 = double(Data.beads1_wf);
 clear Data
 
-
 %
 Yhat              = Yhat1;
 pram              = f_praminit_nuvu();
@@ -172,7 +171,6 @@ pram              = f_praminit_nuvu();
 Y                 = Yhat(360:420 ,160:210, :);
 %Y                 = Yhat(313:373 ,225:286, :);
 %Y                 = Yhat(340:370 ,225:255, :);
-
 
 %pram.bias        = 300;
 %pram.ADCfactor   = .25;
