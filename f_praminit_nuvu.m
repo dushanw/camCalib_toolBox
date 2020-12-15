@@ -17,8 +17,8 @@ function pram = f_praminit_nuvu()
   pram.sigma_dark     = sqrt(pram.X_dark);      % [e-]        Assuming that dark signal Poisson
   
     
-  pram.EMgain         = 50;                     % [AU]        EM gain, 50 is a nominal value
-  pram.Brnuli_alpha   = 0.02;                   %             Probability of a multiplication event in an Em gain stage (=1-2% in Ref2)
+  pram.EMgain         = 500;                    % [AU]        EM gain, 50 is a nominal value
+  pram.Brnuli_alpha   = 0.01;                   %             Probability of a multiplication event in an Em gain stage (=1-2% in Ref2)
   pram.N_gainStages   = round(log(pram.EMgain)/log(1+pram.Brnuli_alpha)); 
                                                 %             Number of Em-gain stages
   pram.ENF            = sqrt( (1/pram.EMgain)*(2*pram.EMgain+pram.Brnuli_alpha-1)/(pram.Brnuli_alpha+1) );

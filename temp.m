@@ -150,7 +150,7 @@ clc; clear all
 
 % mouse brain
 pram.dataPath     = '/Volumes/GoogleDrive/My Drive/_Data/DEEP-TFM/2020-11-19/';
-pram.datafName    = 'dmd_exp_tfm_mouseBrain_20201119_noCrop.mat';
+pram.datafName    = 'dmd_exp_tfm_mouseBrain_20201119_reg_noCrop.mat';
 load([pram.dataPath pram.datafName]);
 Yhat  = double(Data.reg3_100um_wf);
 clear Data
